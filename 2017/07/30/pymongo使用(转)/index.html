@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    
+    <title>pymongo使用 | Z1y2</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    
+    
+      <link rel="icon" href="/favicon.png">
+    
+
+    <link rel="stylesheet" href="/css/style.css">
+
+    <link rel="stylesheet" href="/js/google-code-prettify/tomorrow-night-eighties.min.css">
+
+  </head>
+
+  <body>
+
+<header>
+	<a id="logo" href="/" title="Z1y2">
+	<img src="/favicon.png" alt="Z1y2"></a>
+	
+	
+		<!--搜索栏-->
+		<i class="js-toggle-search iconfont icon-search"></i>
+
+
+<form class="js-search search-form search-form--modal" method="get" action="http://gushi.li" role="search">
+	<div class="search-form__inner">
+		<div>
+			<i class="iconfont icon-search"></i>
+			<input class="text-input" placeholder="Enter Key..." type="search">
+		</div>
+	</div>
+</form>
+	
+
+	
+		<!--侧边导航栏-->
+		<a id="nav-toggle" href="#"><span></span></a>
+
+<nav>
+	<div class="menu-top-container">
+		<ul id="menu-top" class="menu">
+			
+				
+				<li class="current-menu-item">
+					<a href="http://weibo.com/p/1005055760536500?is_all=1" target="_blank">Weibo</a>
+				</li>
+			
+		</ul>
+	</div>
+</nav>
+	
+
+</header>
+<div class="m-header ">
+	<section id="hero1" class="hero">
+		<div class="inner">
+		</div>
+	</section>
+	
+		<figure class="top-image" data-enable=true></figure>
+	
+</div>
+
+<!--文章列表-->
+<div class="wrapper">
+  
+    <!--文章-->
+<article>
+	
+  
+    <h1 class="post-title" itemprop="name">
+      pymongo使用
+    </h1>
+  
+
+	<div class='post-body mb'>
+		<p>使用python中的pymongo模块连接MongoDB</p>
+<h3 id="安装pymongo"><a href="#安装pymongo" class="headerlink" title="安装pymongo"></a>安装pymongo</h3><pre><code>easy_install pymongo
+</code></pre><h3 id="连接mongodb"><a href="#连接mongodb" class="headerlink" title="连接mongodb"></a>连接mongodb</h3><pre><code>import pymongo
+conn = pymongo.MongoClient(host=host,port=port,tz_aware=False)
+</code></pre><h3 id="获取数据库列表"><a href="#获取数据库列表" class="headerlink" title="获取数据库列表"></a>获取数据库列表</h3><pre><code>conn.database_names()
+[u&apos;test1&apos;, u&apos;test2&apos;, u&apos;admin&apos;, u&apos;local&apos;]
+</code></pre><h3 id="连接数据库"><a href="#连接数据库" class="headerlink" title="连接数据库"></a>连接数据库</h3><pre><code>db = conn.get_database(&quot;db_name&quot;)
+</code></pre><h3 id="权限验证"><a href="#权限验证" class="headerlink" title="权限验证"></a>权限验证</h3><pre><code>db.authenticate(&apos;username&apos;, &apos;password&apos;)
+</code></pre><h3 id="获取聚集列表"><a href="#获取聚集列表" class="headerlink" title="获取聚集列表"></a>获取聚集列表</h3><pre><code>db.collection_names()
+[u&apos;account&apos;, u&apos;role&apos;, u&apos;item&apos;, u&apos;online&apos;]
+</code></pre><h3 id="连接聚集"><a href="#连接聚集" class="headerlink" title="连接聚集"></a>连接聚集</h3><pre><code>account = db.get_collection(&quot;col_name&quot;)
+</code></pre><h3 id="查看聚集的一条记录"><a href="#查看聚集的一条记录" class="headerlink" title="查看聚集的一条记录"></a>查看聚集的一条记录</h3><pre><code>account.find_one()
+</code></pre><h3 id="查看聚集的所有key"><a href="#查看聚集的所有key" class="headerlink" title="查看聚集的所有key"></a>查看聚集的所有key</h3><pre><code>account.find_one().keys()
+</code></pre><h3 id="查看聚集的所有记录"><a href="#查看聚集的所有记录" class="headerlink" title="查看聚集的所有记录"></a>查看聚集的所有记录</h3><pre><code>for i in account.find():
+    print i
+</code></pre><h3 id="查看记录总数"><a href="#查看记录总数" class="headerlink" title="查看记录总数"></a>查看记录总数</h3><pre><code>account.find().count()
+</code></pre><h3 id="根据条件查询多条记录"><a href="#根据条件查询多条记录" class="headerlink" title="根据条件查询多条记录"></a>根据条件查询多条记录</h3><pre><code>for i in account.find({&quot;name&quot;: &quot;xxx&quot;}):
+    print i
+</code></pre><h3 id="对查询结果进行排序（默认升序ASCENDING）"><a href="#对查询结果进行排序（默认升序ASCENDING）" class="headerlink" title="对查询结果进行排序（默认升序ASCENDING）"></a>对查询结果进行排序（默认升序ASCENDING）</h3><pre><code>account.find().sort(&quot;name&quot;, pymongo.ASCENDING)
+account.find().sort([(&quot;name&quot;, pymongo.ASCENDING), (&quot;active_time&quot;, pymongo.DESCENDING)])
+</code></pre><h3 id="新增记录"><a href="#新增记录" class="headerlink" title="新增记录"></a>新增记录</h3><pre><code>account.insert({&quot;name&quot;: &quot;mike&quot;, &quot;active_time&quot;: &quot;20130408&quot;})
+</code></pre><h3 id="更新记录"><a href="#更新记录" class="headerlink" title="更新记录"></a>更新记录</h3><pre><code>account.update({&quot;name&quot;: &quot;mike&quot;}, {&quot;$set&quot;: {&quot;active_time&quot;: &quot;20130408120000&quot;}})
+注：如果数据中没有键-值&quot;name&quot;: &quot;mike&quot;， 会新增&quot;active_time&quot;: &quot;20130408120000&quot;
+</code></pre><h3 id="删除记录"><a href="#删除记录" class="headerlink" title="删除记录"></a>删除记录</h3><pre><code>account.remove({&quot;name&quot;: &quot;mike&quot;})
+</code></pre><h3 id="pycharm模糊不清匹配查询"><a href="#pycharm模糊不清匹配查询" class="headerlink" title="pycharm模糊不清匹配查询"></a>pycharm模糊不清匹配查询</h3><pre><code>方法1.
+import re
+{&apos;xxx&apos;:re.compile(&apos;xxx&apos;)}
+
+方法2. 
+{&apos;xxx&apos;:{&apos;$regex&apos;:&apos;xxx&apos;}
+</code></pre><h3 id="and-or"><a href="#and-or" class="headerlink" title="and or"></a>and or</h3><pre><code>account.find({ $or: [ { title: {$regex: &apos;test&apos;} }, { intro: {$regex: &apos;test&apos;} } ] })
+</code></pre><h3 id="实例"><a href="#实例" class="headerlink" title="实例"></a>实例</h3><pre><code>#! /usr/bin/env python
+# --*-- coding:utf-8 --*--
+
+import pymongo
+import re
+
+
+host=&quot;**.**.**.**&quot;
+port=27017
+conn  = pymongo.MongoClient(host=host,port=port,tz_aware=False)
+
+db_name = &quot;test&quot;
+log_name = &quot;col&quot;
+
+db_test = conn.get_database(db_name)
+col_col = db_test.get_collection(log_name)
+
+#print &quot;db names:&quot;, conn.database_names()
+#print &quot;col names:&quot;, db_test.collection_names()
+#print &quot;one_line:&quot;, col_col.find_one()
+
+#print &quot;one_line_keys:&quot;, col_col.find_one().keys()
+
+#col_col.insert({&quot;message2&quot;:&quot;hihihi&quot;, &quot;msg&quot;:&quot;123&quot;})
+#col_col.update({&quot;message&quot;:&quot;hello*3&quot;}, {&quot;$set&quot;:{&quot;message&quot;:&quot;hello*3*9&quot;}})
+import  datetime
+
+y,M,d,h,m,s = 2016,2,13,18,30,0
+d = datetime.datetime(y,M,d,h,m,s)
+delta = datetime.timedelta(hours=8)
+
+d = d-delta
+
+#logs = col_col.find( {&quot;data&quot;:{&quot;$gt&quot;:d} } )
+#logs = col_col.find( {&quot;message&quot;:re.compile(&quot;hi&quot;)} )
+logs = col_col.find( {&quot;$and&quot;: [{&quot;message&quot;:re.compile(&quot;hi&quot;)}, {&quot;data&quot;:{&quot;$gt&quot;:d} }]} )
+
+c = logs.count()
+
+for l in logs:
+    print l
+
+print &quot;count:&quot;, c
+print &quot;END!&quot;
+</code></pre>
+	</div>
+	<div class="meta split">
+		
+			<span>本文总阅读量 <span id="busuanzi_value_page_pv"></span> 次</span>
+		
+		<time class="post-date" datetime="2017-07-30T05:24:45.886Z" itemprop="datePublished">2017-07-30</time>
+	</div>
+</article>
+
+<!--评论-->
+
+	
+<div class="ds-thread" data-thread-key="pymongo使用(转)" data-title="pymongo使用" data-url="http://GooMorning.github.io/2017/07/30/pymongo使用(转)/"></div>
+<script type="text/javascript">
+
+var duoshuoQuery = {short_name:"yumemor"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0]
+		 || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+</script>
+
+
+  
+</div>
+
+
+  <svg id="bigTriangleColor" width="100%" height="40" viewBox="0 0 100 102" preserveAspectRatio="none">
+    <path d="M0 0 L50 100 L100 0 Z"></path>
+  </svg>
+
+  
+
+
+  <div class="wrapper"></div>
+
+
+
+
+
+<div class="fat-footer">
+	<div class="wrapper">
+		<div class="layout layout--center">
+			<div class="layout__item palm-mb">
+				<div class="media">
+					<img class="headimg" src='http://wx3.sinaimg.cn/mw690/006hQCH2ly1fhfw2cw9xtj306606bjrb.jpg' alt='GooMorning'>
+					<div class="media__body">
+						<h4>Z1y2</h4>
+						<p class='site-description'>null</p>
+					</div>
+				</div>
+				<div class="author-contact">
+					<ul>
+						
+							
+							<li>
+				        		<a href="http://weibo.com/p/1005055760536500?is_all=1" target="_blank">
+				        			
+				        				<i class="iconfont icon-weibo"></i>
+				        			
+				        		</a>
+				        	</li>
+						
+							
+							<li>
+				        		<a href="https://github.com/GooMorning/GooMorning.github.io" target="_blank">
+				        			
+				        				<i class="iconfont icon-github"></i>
+				        			
+				        		</a>
+				        	</li>
+						
+							
+							<li>
+				        		<a href="https://www.zhihu.com/people/modest-72" target="_blank">
+				        			
+										<i class="iconfont icon-zhihu"></i>
+				        			
+				        		</a>
+				        	</li>
+						
+					</ul>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<footer class="footer" role="contentinfo">
+	<div class="wrapper wrapper--wide split split--responsive">
+		
+			<span>本站总访问量 <span id="busuanzi_value_site_pv"></span> 次, 访客数 <span id="busuanzi_value_site_uv"></span> 人次</span>
+		
+		<span>Theme by <a href="http://github.com/yumemor">Yumemor</a>. Powered by <a href="http://hexo.io">Hexo</a></span>
+	</div>
+</footer>
+
+	<!-－这里导入了 lib.js 里面涵盖了 jQuery 等框架 所以注释掉-->
+	<!--<script src="http://lib.sinaapp.com/js/jquery/2.0/jquery.min.js"></script>-->
+	<script src="/js/lib.js"></script>
+	<script src="/js/google-code-prettify/prettify.js"></script>
+	<script src="/js/module.js"></script>
+	<script src="/js/script.js"></script>
+	
+		<script async src="http://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+	
+	<script type='text/javascript'>
+		//代码高亮
+		$(document).ready(function(){
+	 		$('pre').addClass('prettyprint linenums').attr('style', 'overflow:auto;');
+   			prettyPrint();
+		});
+	</script>
+	</body>
+</html>

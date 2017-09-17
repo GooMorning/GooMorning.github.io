@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    
+    <title>多线程中传参错误，以及&#39;list&#39; object is not callable错误解决方法 | Z1y2</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    
+    
+      <link rel="icon" href="/favicon.png">
+    
+
+    <link rel="stylesheet" href="/css/style.css">
+
+    <link rel="stylesheet" href="/js/google-code-prettify/tomorrow-night-eighties.min.css">
+
+  </head>
+
+  <body>
+
+<header>
+	<a id="logo" href="/" title="Z1y2">
+	<img src="/favicon.png" alt="Z1y2"></a>
+	
+	
+		<!--搜索栏-->
+		<i class="js-toggle-search iconfont icon-search"></i>
+
+
+<form class="js-search search-form search-form--modal" method="get" action="http://gushi.li" role="search">
+	<div class="search-form__inner">
+		<div>
+			<i class="iconfont icon-search"></i>
+			<input class="text-input" placeholder="Enter Key..." type="search">
+		</div>
+	</div>
+</form>
+	
+
+	
+		<!--侧边导航栏-->
+		<a id="nav-toggle" href="#"><span></span></a>
+
+<nav>
+	<div class="menu-top-container">
+		<ul id="menu-top" class="menu">
+			
+				
+				<li class="current-menu-item">
+					<a href="http://weibo.com/p/1005055760536500?is_all=1" target="_blank">Weibo</a>
+				</li>
+			
+		</ul>
+	</div>
+</nav>
+	
+
+</header>
+<div class="m-header ">
+	<section id="hero1" class="hero">
+		<div class="inner">
+		</div>
+	</section>
+	
+		<figure class="top-image" data-enable=true></figure>
+	
+</div>
+
+<!--文章列表-->
+<div class="wrapper">
+  
+    <!--文章-->
+<article>
+	
+  
+    <h1 class="post-title" itemprop="name">
+      多线程中传参错误，以及&#39;list&#39; object is not callable错误解决方法
+    </h1>
+  
+
+	<div class='post-body mb'>
+		<p>最近编写一个多线程爬取的小脚本，遇到’list’ object is not callable这个错误，发觉不对，我并没有list的这个函数啊，怎么会出现这个错误呢，于是Google大法，发现问题所在，在此将解决问题的过程记录下，方便以后查看。</p>
+<p>错误代码如下：</p>
+<pre><code>file = open(&apos;1.txt&apos;,&apos;r&apos;)
+threads = []
+for line in file:
+    thread = threading.Thread(target=get_title(line))
+    thread.start()
+    threads.append(thread)
+</code></pre><p>通过ipython的调试，发现问题在于</p>
+<pre><code>thread = threading.Thread(target=get_title(line))
+</code></pre><p>通过查询threading官方文档及stackoverflow上大佬们的指示，知道了原来Thread这个函数非常懒惰，函数和参数不能一并在target中传进去，只能让    </p>
+<pre><code>target=get_title
+</code></pre><p>参数需要在<code>args</code>中传进去，知道了方法之后我又抓紧将代码改成如下形式：</p>
+<pre><code>thread = threading.Thread(target=get_title，args=line)
+</code></pre><p>结果又报错了<code>TypeError: get_title() takes 1 positional argument but 17 were given</code></p>
+<p>抓紧看看官方文档上对<code>args</code>参数的说明，原来args需要传进去一个元祖，看着网上大佬们的神奇方法，找到了一个很好的传参方法</p>
+<pre><code>thread = threading.Thread(target=get_title，args=（line,))
+</code></pre><p>加上一个逗号，line就变成元祖参数了，至此，问题解决！</p>
+
+	</div>
+	<div class="meta split">
+		
+			<span>本文总阅读量 <span id="busuanzi_value_page_pv"></span> 次</span>
+		
+		<time class="post-date" datetime="2017-09-17T03:05:08.302Z" itemprop="datePublished">2017-09-17</time>
+	</div>
+</article>
+
+<!--评论-->
+
+	
+<div class="ds-thread" data-thread-key="python多线程中传参错误，以及-list-object-is-not-callable错误解决方法" data-title="多线程中传参错误，以及&#39;list&#39; object is not callable错误解决方法" data-url="http://GooMorning.github.io/2017/09/17/python多线程中传参错误，以及-list-object-is-not-callable错误解决方法/"></div>
+<script type="text/javascript">
+
+var duoshuoQuery = {short_name:"yumemor"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0]
+		 || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+</script>
+
+
+  
+</div>
+
+
+  <svg id="bigTriangleColor" width="100%" height="40" viewBox="0 0 100 102" preserveAspectRatio="none">
+    <path d="M0 0 L50 100 L100 0 Z"></path>
+  </svg>
+
+  
+
+
+  <div class="wrapper"></div>
+
+
+
+
+
+<div class="fat-footer">
+	<div class="wrapper">
+		<div class="layout layout--center">
+			<div class="layout__item palm-mb">
+				<div class="media">
+					<img class="headimg" src='http://wx3.sinaimg.cn/mw690/006hQCH2ly1fhfw2cw9xtj306606bjrb.jpg' alt='GooMorning'>
+					<div class="media__body">
+						<h4>Z1y2</h4>
+						<p class='site-description'>null</p>
+					</div>
+				</div>
+				<div class="author-contact">
+					<ul>
+						
+							
+							<li>
+				        		<a href="http://weibo.com/p/1005055760536500?is_all=1" target="_blank">
+				        			
+				        				<i class="iconfont icon-weibo"></i>
+				        			
+				        		</a>
+				        	</li>
+						
+							
+							<li>
+				        		<a href="https://github.com/GooMorning/GooMorning.github.io" target="_blank">
+				        			
+				        				<i class="iconfont icon-github"></i>
+				        			
+				        		</a>
+				        	</li>
+						
+							
+							<li>
+				        		<a href="https://www.zhihu.com/people/modest-72" target="_blank">
+				        			
+										<i class="iconfont icon-zhihu"></i>
+				        			
+				        		</a>
+				        	</li>
+						
+					</ul>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<footer class="footer" role="contentinfo">
+	<div class="wrapper wrapper--wide split split--responsive">
+		
+			<span>本站总访问量 <span id="busuanzi_value_site_pv"></span> 次, 访客数 <span id="busuanzi_value_site_uv"></span> 人次</span>
+		
+		<span>Theme by <a href="http://github.com/yumemor">Yumemor</a>. Powered by <a href="http://hexo.io">Hexo</a></span>
+	</div>
+</footer>
+
+	<!-－这里导入了 lib.js 里面涵盖了 jQuery 等框架 所以注释掉-->
+	<!--<script src="http://lib.sinaapp.com/js/jquery/2.0/jquery.min.js"></script>-->
+	<script src="/js/lib.js"></script>
+	<script src="/js/google-code-prettify/prettify.js"></script>
+	<script src="/js/module.js"></script>
+	<script src="/js/script.js"></script>
+	
+		<script async src="http://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+	
+	<script type='text/javascript'>
+		//代码高亮
+		$(document).ready(function(){
+	 		$('pre').addClass('prettyprint linenums').attr('style', 'overflow:auto;');
+   			prettyPrint();
+		});
+	</script>
+	</body>
+</html>
