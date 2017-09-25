@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     
-    <title>多线程中传参错误，以及&#39;list&#39; object is not callable错误解决方法 | Z1y2</title>
+    <title>使用Git管理代码 | Z1y2</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     
     
@@ -74,43 +74,59 @@
 	
   
     <h1 class="post-title" itemprop="name">
-      多线程中传参错误，以及&#39;list&#39; object is not callable错误解决方法
+      使用Git管理代码
     </h1>
   
 
 	<div class='post-body mb'>
-		<p>最近编写一个多线程爬取的小脚本，遇到’list’ object is not callable这个错误，发觉不对，我并没有list的这个函数啊，怎么会出现这个错误呢，于是Google大法，发现问题所在，在此将解决问题的过程记录下，方便以后查看。</p>
-<p>错误代码如下：</p>
-<pre><code>file = open(&apos;1.txt&apos;,&apos;r&apos;)
-threads = []
-for line in file:
-    thread = threading.Thread(target=get_title(line))
-    thread.start()
-    threads.append(thread)
-</code></pre><p>通过ipython的调试，发现问题在于</p>
-<pre><code>thread = threading.Thread(target=get_title(line))
-</code></pre><p>通过查询threading官方文档及stackoverflow上大佬们的指示，知道了原来Thread这个函数非常懒惰，函数和参数不能一并在target中传进去，只能让    </p>
-<pre><code>target=get_title
-</code></pre><p>参数需要在<code>args</code>中传进去，知道了方法之后我又抓紧将代码改成如下形式：</p>
-<pre><code>thread = threading.Thread(target=get_title，args=line)
-</code></pre><p>结果又报错了<code>TypeError: get_title() takes 1 positional argument but 17 were given</code></p>
-<p>抓紧看看官方文档上对<code>args</code>参数的说明，原来args需要传进去一个元祖，看着网上大佬们的神奇方法，找到了一个很好的传参方法</p>
-<pre><code>thread = threading.Thread(target=get_title，args=（line,))
-</code></pre><p>加上一个逗号，line就变成元祖参数了，至此，问题解决！ </p>
+		<p>#使用Git管理代码</p>
+<p>###git的四种对象：<br> 一图胜千言<br><img src="https://git-scm.com/book/en/v2/images/commit-and-tree.png" alt="git文件"><br>blob:最小的单元，用于存储数据<br>tree:类似于文件夹<br>commit：表示修改历史。记录某个git的状态<br>tag：签名，可指向前三种对象，经常用来指向commit<br>用指针的思想理解git的运行方式，理解commit</p>
+<hr>
+<p>###准备：</p>
+<ol>
+<li>git账户中建立一个仓库</li>
+<li>在本地建立一个你用来存放代码的文件夹<br>###建立：</li>
+<li>文件夹的项目结构，你最好有以下文件<ul>
+<li><code>.gitignore</code>(存放不加入git版本管理的文件)</li>
+<li><code>LICENSE</code>(开方源代码许可协议，版权声明)</li>
+<li><code>README.md</code>(对项目的介绍，使用方法以及代码的结构)</li>
+</ul>
+</li>
+<li><ul>
+<li>进入你建立的文件目录下，打开bash</li>
+<li><code>git init</code>，这条语句是初始化你的文件夹</li>
+<li><code>git add README.md</code>,将README.md与git连接起来，保存至暂存区</li>
+<li><code>git commit -m &#39;first commit&#39;</code>暂存区修改件提交到版本库</li>
+<li><code>git reset</code>撤销暂存区的所有文件，撤销指定文件后加文件名即可</li>
+<li><code>git push -u origin master</code> 将本地仓库的内容推送到远程仓库<br>到这里基本的配置已经完成了<blockquote>
+<p>对于任何一个文件，Git内都只有三种状态：committed(该文件已经被安全的保存在本地仓库中), modified（文件被修改了， 但还没有被加入到下次提交保存的清单中）, staged（已修改的文件已经放在了下次将要提交保存的清单中）。所以文件流转在三个区域中：1， 工作目录（对应modified）。2，暂存区域（对应staged）。3， 本地仓库(对应committed)。<br>所以，Git的基本工作流程为：1，在工作目录中修改某些文件。2， 对修改后的文件进行快照，然后保存到暂存区域。3， 提交更新，将保存在暂存区域的文件快照永久存储到本地仓库中（repository）。</p>
+</blockquote>
+</li>
+</ul>
+</li>
+</ol>
+<hr>
+<p>###git 命令：<br>克隆：<code>git clone xxx.gitl</code></p>
+<p>####分支：<br><img src="https://git-scm.com/book/en/v2/images/advance-testing.png" alt="分支"><br> 将你的工作从主线分离，不影响主线的同时继续工作<br>查看分支：<code>git branch</code>*前表示当前分支<br>新建分支：<code>git branch xx</code><br>切换分支：<code>git checkout xx</code><br>合并分支:<code>git merge xx</code><br>删除分支:<code>git branch -d xx</code>强制删除使用<code>-D</code></p>
+<pre><code>git checkout -b xx  
+      ==    
+git branch xx
+git checkout  xx
+</code></pre><p>查看哪些分支已经被并入当前分支<code>git branch --merge</code><br>查看未合并的分支<code>git branch --no-merged</code><br>推送本地分支到远程仓库:<code>git push origin 本地仓库分支名:远程仓库分支名</code><br>如本地仓库名与远程仓库名相同，直接使用<code>git push origin 本地仓库分支名</code>即可<br>合并远程分支到本地分支:<code>git pull 远程地址 分支名称</code><br>查看远程分支:<code>gitf fetch 远程地址 分支名称</code><br>so “pull=fetch+merge”<br>参考资料：<a href="https://git-scm.com/" target="_blank" rel="external">https://git-scm.com/</a></p>
 
 	</div>
 	<div class="meta split">
 		
 			<span>本文总阅读量 <span id="busuanzi_value_page_pv"></span> 次</span>
 		
-		<time class="post-date" datetime="2017-09-17T03:05:08.302Z" itemprop="datePublished">2017-09-17</time>
+		<time class="post-date" datetime="2017-09-25T17:05:42.102Z" itemprop="datePublished">2017-09-26</time>
 	</div>
 </article>
 
 <!--评论-->
 
 	
-<div class="ds-thread" data-thread-key="python多线程中传参错误，以及-list-object-is-not-callable错误解决方法" data-title="多线程中传参错误，以及&#39;list&#39; object is not callable错误解决方法" data-url="http://GooMorning.github.io/2017/09/17/python多线程中传参错误，以及-list-object-is-not-callable错误解决方法/"></div>
+<div class="ds-thread" data-thread-key="使用Git管理代码" data-title="使用Git管理代码" data-url="http://GooMorning.github.io/2017/09/26/使用Git管理代码/"></div>
 <script type="text/javascript">
 
 var duoshuoQuery = {short_name:"yumemor"};
