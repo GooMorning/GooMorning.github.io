@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    
+    <title>SQLAlchemy用法指南 | Z1y2</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    
+    
+      <link rel="icon" href="/favicon.png">
+    
+
+    <link rel="stylesheet" href="/css/style.css">
+
+    <link rel="stylesheet" href="/js/google-code-prettify/tomorrow-night-eighties.min.css">
+
+  </head>
+
+  <body>
+
+<header>
+	<a id="logo" href="/" title="Z1y2">
+	<img src="/favicon.png" alt="Z1y2"></a>
+	
+	
+		<!--搜索栏-->
+		<i class="js-toggle-search iconfont icon-search"></i>
+
+
+<form class="js-search search-form search-form--modal" method="get" action="http://gushi.li" role="search">
+	<div class="search-form__inner">
+		<div>
+			<i class="iconfont icon-search"></i>
+			<input class="text-input" placeholder="Enter Key..." type="search">
+		</div>
+	</div>
+</form>
+	
+
+	
+		<!--侧边导航栏-->
+		<a id="nav-toggle" href="#"><span></span></a>
+
+<nav>
+	<div class="menu-top-container">
+		<ul id="menu-top" class="menu">
+			
+				
+				<li class="current-menu-item">
+					<a href="http://weibo.com/p/1005055760536500?is_all=1" target="_blank">Weibo</a>
+				</li>
+			
+		</ul>
+	</div>
+</nav>
+	
+
+</header>
+<div class="m-header ">
+	<section id="hero1" class="hero">
+		<div class="inner">
+		</div>
+	</section>
+	
+		<figure class="top-image" data-enable=true></figure>
+	
+</div>
+
+<!--文章列表-->
+<div class="wrapper">
+  
+    <!--文章-->
+<article>
+	
+  
+    <h1 class="post-title" itemprop="name">
+      SQLAlchemy用法指南
+    </h1>
+  
+
+	<div class='post-body mb'>
+		<h1 id="SQLAlchemy用法指南"><a href="#SQLAlchemy用法指南" class="headerlink" title="SQLAlchemy用法指南"></a>SQLAlchemy用法指南</h1><h2 id="什么是SQLAlchemy"><a href="#什么是SQLAlchemy" class="headerlink" title="什么是SQLAlchemy"></a>什么是SQLAlchemy</h2><p>SQLAlchemy ： python ORM框架<br>ORM : Object-Relational Mapping，将关系型数据库的表结构映射到对象上<br>也就是简化了所有关系型数据库的操作，只需使用SQLAlchemy语法进行操作</p>
+<h2 id="如何使用SQLAlchemy操作数据库"><a href="#如何使用SQLAlchemy操作数据库" class="headerlink" title="如何使用SQLAlchemy操作数据库"></a>如何使用SQLAlchemy操作数据库</h2><p>数据库操作都存在4个基本的功能，增、读、改、删(CRUD)</p>
+<ul>
+<li>增  : db.session.add() </li>
+<li>读  : 使用Model.query()，Model.query是db.session.query(Model)的简写<pre><code>Model.query.all()数据库中所有行
+Model.query.limit(10).all()返回十行
+Model.query.order_by(User.username).all()正向排序
+Model.query.order_by(User.username.desc()).all()逆向排序
+Model.query.first()只返回一行
+Model.query.get(1)通过主键取得
+</code></pre>以上函数皆可以连接起来调用，first()和all()返回结果，终止链式调用    </li>
+</ul>
+<pre><code>Model.query.paginate(1,10)分页
+page.items页数
+page.has_prev上一页
+page.has_prev下一页
+</code></pre><p>筛选数据：filter_by过滤器</p>
+<pre><code>users = User.query.order_by(User.username).filter_by(username=&apos;fake&apos;)
+users = User.query.filter(User.id&gt;1)
+</code></pre><ul>
+<li>改  : .update()</li>
+<li><p>删  : .delete()</p>
+<h2 id="对象之间建立联系"><a href="#对象之间建立联系" class="headerlink" title="对象之间建立联系"></a>对象之间建立联系</h2><p>  class User(Base):</p>
+<pre><code>__tablename__ = &apos;user&apos;
+
+id = Column(String(20), primary_key=True)
+name = Column(String(20))
+# 一对多:
+books = relationship(&apos;Book&apos;)
+</code></pre><p>  class Book(Base):</p>
+<pre><code>__tablename__ = &apos;book&apos;
+
+id = Column(String(20), primary_key=True)
+name = Column(String(20))
+# “多”的一方的book表是通过外键关联到user表的:
+user_id = Column(String(20), ForeignKey(&apos;user.id&apos;))
+</code></pre></li>
+</ul>
+<p>对象User就是数据库中的一个表，可以使用<code>__tablename__</code>指定表明，如果不指定，默认为对象名，promary_key设置为主键，ForeignKey是一个外键约束，relationship表示一个关系</p>
+
+	</div>
+	<div class="meta split">
+		
+			<span>本文总阅读量 <span id="busuanzi_value_page_pv"></span> 次</span>
+		
+		<time class="post-date" datetime="2017-10-16T01:29:47.707Z" itemprop="datePublished">2017-10-16</time>
+	</div>
+</article>
+
+<!--评论-->
+
+	
+<div class="ds-thread" data-thread-key="SQLAlchemy用法指南" data-title="SQLAlchemy用法指南" data-url="http://GooMorning.github.io/2017/10/16/SQLAlchemy用法指南/"></div>
+<script type="text/javascript">
+
+var duoshuoQuery = {short_name:"yumemor"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0]
+		 || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+</script>
+
+
+  
+</div>
+
+
+  <svg id="bigTriangleColor" width="100%" height="40" viewBox="0 0 100 102" preserveAspectRatio="none">
+    <path d="M0 0 L50 100 L100 0 Z"></path>
+  </svg>
+
+  
+
+
+  <div class="wrapper"></div>
+
+
+
+
+
+<div class="fat-footer">
+	<div class="wrapper">
+		<div class="layout layout--center">
+			<div class="layout__item palm-mb">
+				<div class="media">
+					<img class="headimg" src='http://wx3.sinaimg.cn/mw690/006hQCH2ly1fhfw2cw9xtj306606bjrb.jpg' alt='GooMorning'>
+					<div class="media__body">
+						<h4>Z1y2</h4>
+						<p class='site-description'>null</p>
+					</div>
+				</div>
+				<div class="author-contact">
+					<ul>
+						
+							
+							<li>
+				        		<a href="http://weibo.com/p/1005055760536500?is_all=1" target="_blank">
+				        			
+				        				<i class="iconfont icon-weibo"></i>
+				        			
+				        		</a>
+				        	</li>
+						
+							
+							<li>
+				        		<a href="https://github.com/GooMorning/GooMorning.github.io" target="_blank">
+				        			
+				        				<i class="iconfont icon-github"></i>
+				        			
+				        		</a>
+				        	</li>
+						
+							
+							<li>
+				        		<a href="https://www.zhihu.com/people/modest-72" target="_blank">
+				        			
+										<i class="iconfont icon-zhihu"></i>
+				        			
+				        		</a>
+				        	</li>
+						
+					</ul>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<footer class="footer" role="contentinfo">
+	<div class="wrapper wrapper--wide split split--responsive">
+		
+			<span>本站总访问量 <span id="busuanzi_value_site_pv"></span> 次, 访客数 <span id="busuanzi_value_site_uv"></span> 人次</span>
+		
+		<span>Theme by <a href="http://github.com/yumemor">Yumemor</a>. Powered by <a href="http://hexo.io">Hexo</a></span>
+	</div>
+</footer>
+
+	<!-－这里导入了 lib.js 里面涵盖了 jQuery 等框架 所以注释掉-->
+	<!--<script src="http://lib.sinaapp.com/js/jquery/2.0/jquery.min.js"></script>-->
+	<script src="/js/lib.js"></script>
+	<script src="/js/google-code-prettify/prettify.js"></script>
+	<script src="/js/module.js"></script>
+	<script src="/js/script.js"></script>
+	
+		<script async src="http://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+	
+	<script type='text/javascript'>
+		//代码高亮
+		$(document).ready(function(){
+	 		$('pre').addClass('prettyprint linenums').attr('style', 'overflow:auto;');
+   			prettyPrint();
+		});
+	</script>
+	</body>
+</html>
