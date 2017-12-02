@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    
+    <title>flask项目部署和管理实战 | Z1y2</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    
+    
+      <link rel="icon" href="/favicon.png">
+    
+
+    <link rel="stylesheet" href="/css/style.css">
+
+    <link rel="stylesheet" href="/js/google-code-prettify/tomorrow-night-eighties.min.css">
+
+  </head>
+
+  <body>
+
+<header>
+	<a id="logo" href="/" title="Z1y2">
+	<img src="/favicon.png" alt="Z1y2"></a>
+	
+	
+		<!--搜索栏-->
+		<i class="js-toggle-search iconfont icon-search"></i>
+
+
+<form class="js-search search-form search-form--modal" method="get" action="http://gushi.li" role="search">
+	<div class="search-form__inner">
+		<div>
+			<i class="iconfont icon-search"></i>
+			<input class="text-input" placeholder="Enter Key..." type="search">
+		</div>
+	</div>
+</form>
+	
+
+	
+		<!--侧边导航栏-->
+		<a id="nav-toggle" href="#"><span></span></a>
+
+<nav>
+	<div class="menu-top-container">
+		<ul id="menu-top" class="menu">
+			
+				
+				<li class="current-menu-item">
+					<a href="http://weibo.com/p/1005055760536500?is_all=1" target="_blank">Weibo</a>
+				</li>
+			
+		</ul>
+	</div>
+</nav>
+	
+
+</header>
+<div class="m-header ">
+	<section id="hero1" class="hero">
+		<div class="inner">
+		</div>
+	</section>
+	
+		<figure class="top-image" data-enable=true></figure>
+	
+</div>
+
+<!--文章列表-->
+<div class="wrapper">
+  
+    <!--文章-->
+<article>
+	
+  
+    <h1 class="post-title" itemprop="name">
+      flask项目部署和管理实战
+    </h1>
+  
+
+	<div class='post-body mb'>
+		<p>最近老师让部署学校CTF攻防平台，平台是用Flask写的，结合着老师给的参考经验，耗费了大约一个星期终于上线了。这里为做第一次实战纪念，也是做经验总结，写下这篇博客。</p>
+<h2 id="背景："><a href="#背景：" class="headerlink" title="背景："></a>背景：</h2><p>校级CTF比赛，参数人数规模百人左右，web应用是我们自己写的，本人之前没有任何搭建实战项目的经验，可能有些地方做的不好，还用了很多笨方法，还请大佬们指正。</p>
+<p>项目组件：Flask+mongoDB+redis</p>
+<h2 id="思路："><a href="#思路：" class="headerlink" title="思路："></a>思路：</h2><p>部署web应用到实战中，需要考虑的问题很多。抛开web应用的功能不说，我从压力处理、测试流程、应急、备份方面说下我的做法</p>
+<h4 id="压力的处理："><a href="#压力的处理：" class="headerlink" title="-_-压力的处理："></a>-_-压力的处理：</h4><p>本人开发狗一个，并不懂运维等知识，但是团队给的任务，硬着头皮也要刚，部署中我使用nginx 做负载均衡和反向代理，来处理压力的问题，nginx对新手很友好，由于没有那么多流量，我只需要把请求分发到各个web应用服务器上就可以了，不知道有没有更好的方法，但我用的方法在我们的实践中证明可行。</p>
+<h4 id="测试："><a href="#测试：" class="headerlink" title="-_-测试："></a>-_-测试：</h4><p>测试的重要性就不必说了，web应用在搭建的过程中肯定会遇到各种各样的问题，需要有一个与真实情况相同的测试环境，但是不能影响真实环境中的数据。</p>
+<p>我直接copy了一个MongoDB数据库，然后直接开了另外一个python应用，调用另外一个数据库的内容，也就是说参赛人数快固定的时候，我把整个数据库和python应用copy了一份，然后进行一次整体的测试，主站继续开放注册，测试环境不影响主站的功能。</p>
+<h4 id="应急"><a href="#应急" class="headerlink" title="-_-应急"></a>-_-应急</h4><p>所谓应急，就是在平台down掉的情况下快速恢复，在压力过大的情况下立既扩展服务器接受能力。nginx可以做到快速添加服务器，linux下supervisor可以时时监控进程信息，也支持自动重启等设置，很好用。所以我就用这个快速恢复平台。</p>
+<h4 id="备份"><a href="#备份" class="headerlink" title="-_-备份:"></a>-_-备份:</h4><p>备份只和数据库有关，所以这里写的就是关于数据库的备份，恢复了。MongoDB自带  <code>mongodump</code>、 <code>mongorestore</code>,基础的用法我就不说了，简单讲讲认证的事情吧，因为数据库在实战中肯定是要设置认证的，但是网上大多关于这些的都没有写关于认证的情况怎么使用，所以我就写我的导入导出</p>
+<h4 id="部署架构："><a href="#部署架构：" class="headerlink" title="-_-部署架构："></a>-_-部署架构：</h4><p><img src="https://wx2.sinaimg.cn/mw1024/006hQCH2ly1fm29cjp87tj30nf0hqaby.jpg" alt=""></p>
+<p>使用一台nginx转发请求到两个flask应用，数据库单独一个服务器，<br>外部访问nginx服务器</p>
+<h2 id="实战"><a href="#实战" class="headerlink" title="实战"></a>实战</h2><h4 id="MongoDB数据库"><a href="#MongoDB数据库" class="headerlink" title="MongoDB数据库"></a>MongoDB数据库</h4><h5 id="MongoDB数据库用户管理配置"><a href="#MongoDB数据库用户管理配置" class="headerlink" title="MongoDB数据库用户管理配置"></a>MongoDB数据库用户管理配置</h5><p>–auth启动</p>
+<p>先建立一个admin用户</p>
+<pre><code>use admin
+db.createUser
+({
+          user:&apos;admin&apos;,
+         pwd:&apos;123456&apos;,
+        roles:[
+        {role:&apos;useAdminAnyDatabase&apos;,db:&apos;admin&apos;}
+    ]
+})
+</code></pre><p>再建立一个你自己的数据库</p>
+<pre><code>use xxx
+db.createUser
+({
+          user:&apos;xxx&apos;,
+         pwd:&apos;xxx&apos;,
+        roles:[
+        {role:&apos;readWrite&apos;,db:&apos;xxx&apos;}
+    ]
+})
+</code></pre><p>使用   <code>db.auth(&#39;username&#39;,&#39;password&#39;)</code>登陆</p>
+<h5 id="MongoDB数据库的复制："><a href="#MongoDB数据库的复制：" class="headerlink" title="MongoDB数据库的复制："></a>MongoDB数据库的复制：</h5><p>开着认证模式一直没有copy成功，然后我把认证模式关闭了</p>
+<p>然后执行  <code>db.copyDatabase(fromdb,todb,fromhost)</code></p>
+<p>复制出一个数据表</p>
+<h5 id="MongoDB数据库认证模式下的备份和恢复"><a href="#MongoDB数据库认证模式下的备份和恢复" class="headerlink" title="MongoDB数据库认证模式下的备份和恢复"></a>MongoDB数据库认证模式下的备份和恢复</h5><p>备份和恢复操作不在mongo shell 里执行，直接在终端或cmd执行</p>
+<p>备份：<code>mongodump -h host -u &#39;username&#39; -p &#39;password&#39; --authenticationDatabase &#39;user&#39; -d &#39;dbname&#39; -o /xx/xx</code></p>
+<p>恢复：<code>mongorestore -h host -u &#39;username&#39; -p &#39;password&#39; --authenticationDatabase &#39;user&#39; -d &#39;dbname&#39; /xxx/xxx/</code></p>
+<h4 id="使用supervisor管理你的进程"><a href="#使用supervisor管理你的进程" class="headerlink" title="使用supervisor管理你的进程"></a>使用supervisor管理你的进程</h4><pre><code>apt-get update
+apt-get install supervisor
+</code></pre><p>安装好之后就可以配置了</p>
+<p>查看配置文件：</p>
+<pre><code>vim /etc/supervisor/supervisord.conf
+</code></pre><p>配置文件如下</p>
+<pre><code>; supervisor config file
+
+[unix_http_server] 
+file=/var/run/supervisor.sock   ; (the path to the socket file) 
+; supervisor config file 
+
+[unix_http_server] 
+file=/var/run/supervisor.sock   ; (the path to the socket file) 
+chmod=0700                       ; sockef file mode (default 0700) 
+
+[supervisord] 
+logfile=/var/log/supervisor/supervisord.log ; (main log file;default $CWD/supervisord.log) 
+pidfile=/var/run/supervisord.pid ; (supervisord pidfile;default supervisord.pid) 
+childlogdir=/var/log/supervisor            ; (&apos;AUTO&apos; child log dir, default $TEMP) 
+
+; the below section must remain in the config file for RPC 
+; (supervisorctl/web interface) to work, additional interfaces may be 
+; added by defining them in separate rpcinterface: sections 
+[rpcinterface:supervisor] 
+supervisor.rpcinterface_factory = supervisor.rpcinterface:make_main_rpcinterface 
+
+[supervisorctl] 
+serverurl=unix:///var/run/supervisor.sock ; use a unix:// URL  for a unix socket 
+
+;The [include] section can just contain the &quot;files&quot; setting.  This 
+; setting can list multiple files (separated by whitespace or 
+; newlines).  It can also contain wildcards.  The filenames are 
+; interpreted as relative to this file.  Included files *cannot* 
+; include files themselves. 
+[include] 
+files = /etc/supervisor/conf.d/*.conf 
+</code></pre><p>如上配置的没错的话，就开始下一步吧，有必要说一下的就是最后两句，[include]是将指定目录下的配置文件导入使用，这样容易配置，也不容易出错</p>
+<p>然后就往conf.d文件夹中写入配置</p>
+<pre><code>cd /etc/supervisor/conf.d
+vim program.conf
+</code></pre><p>program文件内容格式如下:</p>
+<pre><code>[program:usercenter]
+;directory = /home/leon/projects/usercenter ; 程序的启动目录
+command = python /xxx/xxx/xxx.py  ; 启动命令，可以看出与手动在命令行启动的命令是一样的
+autostart = true     ; 在 supervisord 启动的时候也自动启动
+startsecs = 5        ; 启动 5 秒后没有异常退出，就当作已经正常启动了
+autorestart = true   ; 程序异常退出后自动重启
+startretries = 3     ; 启动失败自动重试次数，默认是 3
+;user = leon          ; 用哪个用户启动
+;redirect_stderr = true  ; 把 stderr 重定向到 stdout，默认 false
+;stdout_logfile_maxbytes = 20MB  ; stdout 日志文件大小，默认 50MB
+;stdout_logfile_backups = 20     ; stdout 日志文件备份数
+; stdout 日志文件，需要注意当指定目录不存在时无法正常启动，所以需要手动创建目录（supervisord 会自动创建日志文件）
+;stdout_logfile = /data/logs/usercenter_stdout.log
+; 可以通过 environment 来添加需要的环境变量，一种常见的用法是修改 PYTHONPATH
+; environment=PYTHONPATH=$PYTHONPATH:/path/to/somewhere    
+</code></pre><p>   以上是详细参数，我只用了几个，其他的都注释掉了。</p>
+<p>   配置好了之后，直接使用 <code>supervisord -c /etc/supervisor/superviosrd.conf</code>启动即可</p>
+<p>   然后就是查看状态，重启，停止之类的。Flask可以起在多个端口，只要配置文件写好，就可以同时进行管理</p>
+<p>   先是<code>superviosrctl</code>进入交互界面，输入help</p>
+<pre><code>add    exit      open  reload  restart   start   tail   
+avail  fg        pid   remove  shutdown  status  update 
+clear  maintail  quit  reread  signal    stop    version
+</code></pre><p>以上就是全部命令，用法就是命令加进程号，</p>
+<p>example：</p>
+<pre><code>查看状态    status program
+全部应用重启，就是  restart all
+</code></pre><h4 id="使用nginx服务器配置反向代理和负载均衡"><a href="#使用nginx服务器配置反向代理和负载均衡" class="headerlink" title="使用nginx服务器配置反向代理和负载均衡"></a>使用nginx服务器配置反向代理和负载均衡</h4><p>nginx是现在很流行的web服务器，用nginx监听80，再将请求转发到别的服务器上，既能减轻服务器的压力，也可以起到一个隔离层的作用</p>
+<p>下载方法我就不说了，这里只讲配置</p>
+<p><code>vim /etc/nginx/nginx.conf</code></p>
+<p>以下分割线中间为添加的配置内容</p>
+<hr>
+<pre><code>upstream  backend{
+     server   xx.xx.xx.xx:xx;
+    server   xx.xx.xx.xx:xx;
+    server   xx.xx.xx.xx:xx;
+}
+server {
+    listen       80 default_server;
+   # listen       [::]:80 default_server;
+    server_name  127.0.0.1;        
+   # root         /usr/share/nginx/html;
+   permanent;
+   # Load configuration files for the default server block.
+   include /etc/nginx/default.d/*.conf;
+
+   location / {
+     proxy_pass http://backend;
+     proxy_set_header  X-Real-IP $remote_addr;
+   }
+</code></pre><hr>
+<p>proxy_pass 后跟的是反向代理的地址</p>
+<p>upstream  是以轮询的方式分别访问这几个服务器</p>
+<p>nginx -s stop 停止<br>nginx 再启动就生效了。</p>
+<p>以上几乎是我的全部配置，一个项目从建立到搭建成功，收获很多，在此记录一下。</p>
+
+	</div>
+	<div class="meta split">
+		
+			<span>本文总阅读量 <span id="busuanzi_value_page_pv"></span> 次</span>
+		
+		<time class="post-date" datetime="2017-12-02T08:53:24.071Z" itemprop="datePublished">2017-12-02</time>
+	</div>
+</article>
+
+<!--评论-->
+
+	
+<div class="ds-thread" data-thread-key="flask项目部署和管理实战" data-title="flask项目部署和管理实战" data-url="http://GooMorning.github.io/2017/12/02/flask项目部署和管理实战/"></div>
+<script type="text/javascript">
+
+var duoshuoQuery = {short_name:"yumemor"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0]
+		 || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+</script>
+
+
+  
+</div>
+
+
+  <svg id="bigTriangleColor" width="100%" height="40" viewBox="0 0 100 102" preserveAspectRatio="none">
+    <path d="M0 0 L50 100 L100 0 Z"></path>
+  </svg>
+
+  
+
+
+  <div class="wrapper"></div>
+
+
+
+
+
+<div class="fat-footer">
+	<div class="wrapper">
+		<div class="layout layout--center">
+			<div class="layout__item palm-mb">
+				<div class="media">
+					<img class="headimg" src='http://wx3.sinaimg.cn/mw690/006hQCH2ly1fhfw2cw9xtj306606bjrb.jpg' alt='GooMorning'>
+					<div class="media__body">
+						<h4>Z1y2</h4>
+						<p class='site-description'>null</p>
+					</div>
+				</div>
+				<div class="author-contact">
+					<ul>
+						
+							
+							<li>
+				        		<a href="http://weibo.com/p/1005055760536500?is_all=1" target="_blank">
+				        			
+				        				<i class="iconfont icon-weibo"></i>
+				        			
+				        		</a>
+				        	</li>
+						
+							
+							<li>
+				        		<a href="https://github.com/GooMorning/GooMorning.github.io" target="_blank">
+				        			
+				        				<i class="iconfont icon-github"></i>
+				        			
+				        		</a>
+				        	</li>
+						
+							
+							<li>
+				        		<a href="https://www.zhihu.com/people/modest-72" target="_blank">
+				        			
+										<i class="iconfont icon-zhihu"></i>
+				        			
+				        		</a>
+				        	</li>
+						
+					</ul>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<footer class="footer" role="contentinfo">
+	<div class="wrapper wrapper--wide split split--responsive">
+		
+			<span>本站总访问量 <span id="busuanzi_value_site_pv"></span> 次, 访客数 <span id="busuanzi_value_site_uv"></span> 人次</span>
+		
+		<span>Theme by <a href="http://github.com/yumemor">Yumemor</a>. Powered by <a href="http://hexo.io">Hexo</a></span>
+	</div>
+</footer>
+
+	<!-－这里导入了 lib.js 里面涵盖了 jQuery 等框架 所以注释掉-->
+	<!--<script src="http://lib.sinaapp.com/js/jquery/2.0/jquery.min.js"></script>-->
+	<script src="/js/lib.js"></script>
+	<script src="/js/google-code-prettify/prettify.js"></script>
+	<script src="/js/module.js"></script>
+	<script src="/js/script.js"></script>
+	
+		<script async src="http://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+	
+	<script type='text/javascript'>
+		//代码高亮
+		$(document).ready(function(){
+	 		$('pre').addClass('prettyprint linenums').attr('style', 'overflow:auto;');
+   			prettyPrint();
+		});
+	</script>
+	</body>
+</html>
